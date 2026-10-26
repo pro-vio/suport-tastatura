@@ -1,0 +1,188 @@
+<title>Suport de tastatură</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+  /* Layout: o coloană de citit sus, apoi planșele pe toată lățimea, ca foi de hârtie pe masa de lucru. */
+  :root {
+    --bg: #eef0ec;        /* masa de lucru, gri cu o tentă verde */
+    --fg: #1d2220;
+    --muted: #59615c;
+    --line: #cfd4cd;
+    --accent: #9a6420;    /* pin */
+    --paper: #ffffff;     /* foaia planșei rămâne albă în ambele teme */
+    --shadow: rgba(20, 30, 25, 0.12);
+    --f-display: "Barlow Condensed", "Arial Narrow", Arial, sans-serif;
+    --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    --f-mono: "IBM Plex Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #151918; --fg: #e4e8e4; --muted: #9ba49e; --line: #2c3331; --accent: #d9a45a;
+      --paper: #f7f7f4; --shadow: rgba(0, 0, 0, 0.45); color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #151918; --fg: #e4e8e4; --muted: #9ba49e; --line: #2c3331; --accent: #d9a45a;
+    --paper: #f7f7f4; --shadow: rgba(0, 0, 0, 0.45); color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--fg); font: 16px/1.6 var(--f-body); }
+  main {
+    max-width: 1180px; margin: 0 auto;
+    padding-block: 40px 72px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    display: grid; gap: 48px;
+  }
+  header { display: grid; gap: 14px; max-width: 68ch; }
+  .eyebrow { font: 500 15px/1 var(--f-display); letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+  h1 { font: 600 clamp(36px, 6vw, 60px)/1 var(--f-display); margin: 0; text-wrap: balance; letter-spacing: 0.01em; }
+  h2 { font: 600 26px/1.1 var(--f-display); margin: 0; letter-spacing: 0.02em; text-wrap: balance; }
+  p { margin: 0; max-width: 68ch; }
+  .muted { color: var(--muted); }
+
+  .fise { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 0; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+  .fisa { padding: 14px 16px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); display: grid; gap: 4px; min-width: 0; }
+  .fisa dt { font: 500 13px/1.2 var(--f-display); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .fisa dd { margin: 0; font: 400 17px/1.35 var(--f-mono); font-variant-numeric: tabular-nums; }
+  .fisa dd small { display: block; font: 400 13px/1.4 var(--f-body); color: var(--muted); }
+
+  .plansa { display: grid; gap: 12px; }
+  .plansa-cap { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+  .plansa-cap .nr { font: 600 15px/1 var(--f-mono); color: var(--accent); }
+  .plansa-cap p { flex-basis: 100%; color: var(--muted); }
+  .foaie { overflow-x: auto; border-radius: 2px; }
+  .foaie svg.page { display: block; width: 100%; min-width: 760px; height: auto; background: var(--paper); box-shadow: 0 1px 2px var(--shadow), 0 8px 28px var(--shadow); }
+
+  /* liniile planșelor, aceleași ca în plansa.html */
+  svg.page text { font-family: "Arial Narrow", Arial, sans-serif; fill: #000; }
+  svg.page .cut { fill: url(#hatch); stroke: #000; stroke-width: 0.45; }
+  svg.page .vis { fill: none; stroke: #000; stroke-width: 0.25; }
+  svg.page .hid { fill: none; stroke: #000; stroke-width: 0.15; stroke-dasharray: 1.2 0.8; }
+  svg.page .axis { fill: none; stroke: #000; stroke-width: 0.15; stroke-dasharray: 4 0.8 0.6 0.8; }
+  svg.page .dim { fill: none; stroke: #000; stroke-width: 0.13; }
+  svg.page .tick { fill: none; stroke: #000; stroke-width: 0.35; }
+  svg.page .floor { fill: none; stroke: #000; stroke-width: 0.6; }
+  svg.page .frame { fill: none; stroke: #000; stroke-width: 0.5; }
+  svg.page .thin { fill: none; stroke: #000; stroke-width: 0.18; }
+
+  .anim { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 20px; align-items: start; }
+  @media (max-width: 760px) { .anim { grid-template-columns: minmax(0, 1fr); } }
+  #anim { display: block; width: 100%; height: auto; background: var(--paper); box-shadow: 0 1px 2px var(--shadow), 0 8px 28px var(--shadow); }
+  .anim-panou { display: grid; gap: 14px; min-width: 0; }
+  .anim-pas { font: 500 14px/1 var(--f-display); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+  .anim-text { font-size: 18px; line-height: 1.5; min-height: 4.5em; }
+  .anim-butoane { display: flex; flex-wrap: wrap; gap: 8px; }
+  .anim-butoane button { font: 500 16px/1 var(--f-display); letter-spacing: 0.05em; padding: 10px 14px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); border-radius: 3px; cursor: pointer; }
+  .anim-butoane button:hover { border-color: var(--accent); }
+  .anim-butoane button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #anim-monteaza, #anim-demonteaza { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+  .anim-bifa { display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: 15px; }
+
+  .intrebare { border-left: 3px solid var(--accent); padding: 4px 0 4px 16px; display: grid; gap: 6px; max-width: 72ch; }
+  .intrebare strong { font: 600 18px/1.2 var(--f-display); letter-spacing: 0.04em; text-transform: uppercase; }
+</style>
+
+<svg width="0" height="0" style="position:absolute;width:0;height:0" aria-hidden="true"><defs>
+  <pattern id="hatch" patternUnits="userSpaceOnUse" width="0.9" height="0.9" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="0.9" stroke="#000" stroke-width="0.1"/></pattern>
+  <pattern id="waste" patternUnits="userSpaceOnUse" width="1.6" height="1.6" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="1.6" stroke="#888" stroke-width="0.12"/></pattern>
+</defs></svg>
+
+<main>
+  <header>
+    <span class="eyebrow">Mobilă · proiect de execuție</span>
+    <h1>Suport de tastatură din două cutii</h1>
+    <p id="intro"></p>
+  </header>
+
+  <dl class="fise" id="fise"></dl>
+
+  <section class="plansa">
+    <div class="plansa-cap"><h2>Montarea și demontarea</h2>
+      <p>Pas cu pas, de la cutiile strânse, ca măsuță lângă taburet, la suportul gata de lucru, și înapoi. Cutiile se pot vedea transparent, ca să se vadă piesa în T care trece prin ele.</p></div>
+    <div class="anim">
+      <svg id="anim" viewBox="0 0 300 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Animația montării suportului de tastatură"></svg>
+      <div class="anim-panou">
+        <p class="anim-pas" id="anim-pas"></p>
+        <p class="anim-text" id="anim-text" aria-live="polite"></p>
+        <div class="anim-butoane">
+          <button type="button" id="anim-monteaza">Montează</button>
+          <button type="button" id="anim-demonteaza">Demontează</button>
+          <button type="button" id="anim-inapoi" aria-label="Pasul anterior">◀ Pas</button>
+          <button type="button" id="anim-inainte" aria-label="Pasul următor">Pas ▶</button>
+          <button type="button" id="anim-opreste">Oprește</button>
+        </div>
+        <label class="anim-bifa"><input type="checkbox" id="anim-transp" checked> Cutiile transparente</label>
+      </div>
+    </div>
+  </section>
+
+  <section class="plansa">
+    <div class="plansa-cap"><span class="nr">1 / 4</span><h2>Cum arată</h2>
+      <p>La lucru, cutia mare stă culcată pe cea mică, iar sertarul pentru mouse iese spre dreapta. Strânse, cutia mare acoperă cutia mică și devine măsuță.</p></div>
+    <div class="foaie"><svg id="p1" class="page" viewBox="0 0 420 297" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Axonometria suportului de tastatură"></svg></div>
+  </section>
+
+  <section class="plansa">
+    <div class="plansa-cap"><span class="nr">2 / 4</span><h2>Ansamblu, vederi și secțiuni</h2>
+      <p>Cotele în milimetri, la scările 1:10, 1:5 și 1:2, cu lista de piese și notele de execuție.</p></div>
+    <div class="foaie"><svg id="p2" class="page" viewBox="0 0 420 297" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ansamblu, vederi, secțiuni și detaliul șinei"></svg></div>
+  </section>
+
+  <section class="plansa">
+    <div class="plansa-cap"><span class="nr">3 / 4</span><h2>Planul de debitare</h2>
+      <p id="debitare-cap"></p></div>
+    <div class="foaie"><svg id="p3" class="page" viewBox="0 0 420 297" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Planul de debitare pe plăci"></svg></div>
+  </section>
+
+  <section class="plansa">
+    <div class="plansa-cap"><span class="nr">4 / 4</span><h2>Eurosuruburile</h2>
+      <p id="suruburi-cap"></p></div>
+    <div class="foaie"><svg id="p4" class="page" viewBox="0 0 420 297" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pozițiile eurosuruburilor pe fiecare piesă"></svg></div>
+  </section>
+
+  <div class="intrebare">
+    <strong>De întrebat la Hornbach</strong>
+    <p id="intrebare"></p>
+  </div>
+</main>
+
+<script src="geometrie.js"></script>
+<script src="plansa-desen.js"></script>
+<script src="plansa-pagini.js"></script>
+<script src="animatie.js"></script>
+<script>
+(function () {
+  const cm = mm => (mm / 10).toLocaleString('ro-RO', { maximumFractionDigits: 1 });
+  const lei = x => x.toLocaleString('ro-RO', { maximumFractionDigits: 2 });
+  const plan = planDebitare();
+  const placi = ['A', 'B', 'C', 'S'].reduce((s, k) => s + plan[k].placi.length, 0);
+  const laHornbach = PIESE.filter(p => p.nume && undeSeTaie(p.placa) === 'la Hornbach');
+
+  document.getElementById('intro').textContent =
+    `Stă pe taburetul IKEA BEKVÄM și ridică tastatura la ${cm(P.tinta)} cm de la podea, cu tastele cam la înălțimea cotului. ` +
+    `Cutia mare, vopsită negru, are o față deschisă prin care iese sertarul pentru mouse. Cutia mică rămâne în culoarea lemnului.`;
+
+  const fise = [
+    ['Înălțimea de lucru', `${cm(P.tinta)} cm`, `sertarul la ${cm(D.mouse)} cm`],
+    ['Cutia mare', `${P.lungSus} × ${D.mareD} × ${D.mareV}`, 'mm, culcată, neagră'],
+    ['Cutia mică', `${P.micaW} × ${D.micaD} × ${D.micaH}`, 'mm, natur'],
+    ['Material', `${t} mm`, MATERIALE[P.material].nume],
+    ['Plăci', `${lei(plan.pret)} lei`, `${placi} bucăți, prețuri Hornbach din 26.10.2026`],
+    ['Eurosuruburi', `${numarSuruburi()} buc.`, P.surub.nume]
+  ];
+  document.getElementById('fise').innerHTML = fise.map(([dt, dd, s]) =>
+    `<div class="fisa"><dt>${dt}</dt><dd>${dd}<small>${s}</small></dd></div>`).join('');
+
+  document.getElementById('debitare-cap').textContent =
+    `Toate piesele se taie de-a curmezișul plăcii, deci nimic nu se spintecă. ` +
+    `Plăcile de ${P.latA} mm le taie Hornbach, fiindcă trec de cei ${P.taiereAcasa} mm ai fierăstrăului de acasă; restul se taie acasă.`;
+  document.getElementById('suruburi-cap').textContent =
+    `Fiecare piesă cu găurile ei cotate. Gaura din cant se dă prin cea de pe față, cu piesele strânse. ` +
+    `Unde șurubul intră în capătul fibrei, îmbinarea se și lipește.`;
+  document.getElementById('intrebare').textContent =
+    `Pagina lor spune că nu debitează sub ${P.limitaDebitare} mm pe orizontală și 500 mm pe verticală. ` +
+    `Piesele pe care le taie ei au ${laHornbach.map(p => `${p.L} × ${p.l} mm`).join(', ')}, deci niciuna nu ajunge la 500 mm. ` +
+    `Nu e limpede dacă limita privește piesa care iese sau placa pusă în mașină.`;
+})();
+</script>

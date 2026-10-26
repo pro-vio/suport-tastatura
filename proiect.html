@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Suport de tastatură</title>
+<style>
+  :root { --ink:#1d1d1f; --muted:#6b6b70; --line:#c9c9ce; --black:#2b2b2e; --ply:#e8d3a6; --ply-edge:#c9a96a; --bg:#fafaf7; --accent:#b4462b; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 system-ui, "Segoe UI", sans-serif; }
+  main { max-width:960px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-size:26px; margin:0 0 4px; }
+  h2 { font-size:19px; margin:36px 0 8px; }
+  p, li { max-width:72ch; }
+  .muted { color:var(--muted); }
+  .views { display:grid; grid-template-columns:1fr; gap:24px; }
+  @media (min-width:820px) { .views { grid-template-columns:3fr 2fr; } }
+  figure { margin:0; background:#fff; border:1px solid var(--line); border-radius:8px; padding:12px; }
+  figcaption { font-size:14px; color:var(--muted); margin-top:6px; }
+  svg { width:100%; height:auto; display:block; }
+  svg text { font-family:system-ui, "Segoe UI", sans-serif; fill:var(--ink); }
+  .black { fill:var(--black); }
+  .ply { fill:var(--ply); stroke:var(--ply-edge); stroke-width:2; }
+  .drawer { fill:#8a8a90; }
+  .hidden { fill:none; stroke:#8a8a90; stroke-width:2; stroke-dasharray:8 6; }
+  .hole { fill:#fff; stroke:#8a8a90; stroke-width:2; }
+  .stool { fill:#3a3a3d; }
+  .dim { stroke:var(--accent); stroke-width:2; fill:none; }
+  .dimtxt { fill:var(--accent); font-size:24px; }
+  .note { font-size:22px; fill:var(--muted); }
+  table { border-collapse:collapse; width:100%; font-size:15px; }
+  th, td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  td.n { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  tr.grp td { font-weight:600; background:#f0efe9; }
+  .ok { color:#2f7a3a; } .bad { color:var(--accent); font-weight:600; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Suport de tastatură din două cutii</h1>
+  <p class="muted">Toate cotele de pe pagină se calculează din <code>geometrie.js</code>, în milimetri. Din același fișier se desenează și planșele pentru arhitect, <a href="plansa.html">plansa.html</a>, scoase în <a href="plansa-suport-tastatura.pdf">PDF</a>.</p>
+
+  <h2>Cum se folosesc</h2>
+  <p>Cutia mică, lăsată în culoarea lemnului, are toate fețele închise și stă pe taburet. Cutia mare, vopsită negru, are o față deschisă. Pentru lucru, cutia mare se culcă pe cutia mică, cu fața deschisă spre dreapta. Prin fața deschisă se trage spre dreapta sertarul pentru mouse, care alunecă lemn pe lemn chiar sub capac. Când le strângeți, scoateți tastatura și mouse-ul. Cutia mare se pune apoi în picioare, cu fața deschisă în jos, peste cutia mică, și devine măsuță.</p>
+  <p>Fiecare cutie are două găuri de mână, pe fețe opuse. La cutia mare sunt pe față și pe spate, la cea mică pe laterale.</p>
+  <p>O piesă în T prinde cutiile de taburet. Tija ei coboară printr-o frezare din fundul cutiei mari, prin capacul și fundul cutiei mici și prin gaura de mână a șezutului, iar bara rămâne pe fundul cutiei mari. Se pune și se scoate prin fața deschisă, cu sertarul scos. Sub șezut, o pană plată bătută printr-o gaură din capătul tijei strânge totul; la demontare, pana se scoate cu o lovitură în capătul ei subțire.</p>
+
+  <div class="views">
+    <figure><svg id="v1"></svg><figcaption>Poziția de lucru, secțiune verticală privită din față. Pereții din față și din spate ai cutiei mari sunt tăiați, ca să se vadă sertarul. Cu linie întreruptă sunt șina și gaura de mână de pe peretele din spate.</figcaption></figure>
+    <figure><svg id="v2"></svg><figcaption>Strânsă, ca măsuță, aceeași secțiune. Cutia mică stă înăuntru, pe o latură, iar sertarul rămâne la locul lui.</figcaption></figure>
+  </div>
+
+  <h2>Cât iese sertarul</h2>
+  <figure><svg id="v3" style="max-width:640px"></svg><figcaption id="v3cap"></figcaption></figure>
+
+  <h2>Verificări</h2>
+  <ul id="checks"></ul>
+
+  <h2>Lista de piese</h2>
+  <p id="sheet" class="muted"></p>
+  <table id="cut"><thead><tr><th>Nr.</th><th>Piesa</th><th>Buc.</th><th class="n">Pe fibră</th><th class="n">Lățime</th><th>Placa</th><th>Unde stă</th></tr></thead><tbody></tbody></table>
+
+  <h2>Ce se cumpără și cum se taie</h2>
+  <p id="plan-intro"></p>
+  <table id="plan"><thead><tr><th>Ce se cumpără</th><th class="n">Preț</th><th>Unde se taie</th><th>Ce se taie din ea, de-a curmezișul</th><th class="n">Rest</th></tr></thead><tbody></tbody></table>
+  <p id="plan-alt" class="muted"></p>
+  <p id="plan-limita"></p>
+
+  <h2>Ce am ales eu și se poate schimba</h2>
+  <ul id="choices"></ul>
+</main>
+
+<script src="geometrie.js"></script>
+<script>
+const t = P.t;
+const cm = mm => (mm / 10).toLocaleString('ro-RO', { maximumFractionDigits: 1 });
+
+function svgView(el, x0, y0, w, h) {
+  el.setAttribute('viewBox', `${x0} 0 ${w} ${h}`);
+  const Y = y => h - (y - y0);
+  const out = [];
+  const Pg = (pts, cls) => out.push(`<polygon points="${pts.map(([x, y]) => x + ',' + Y(y)).join(' ')}" class="${cls}"/>`);
+  const R = (x1, y1, x2, y2, cls, rx = 0) => out.push(`<rect x="${x1}" y="${Y(y2)}" width="${x2 - x1}" height="${y2 - y1}" rx="${rx}" class="${cls}"/>`);
+  const T = (x, y, s, cls, anchor = 'middle', rot = 0) =>
+    out.push(`<text x="${x}" y="${Y(y)}" class="${cls}" text-anchor="${anchor}"${rot ? ` transform="rotate(${rot} ${x} ${Y(y)})"` : ''}>${s}</text>`);
+  const dimH = (x1, x2, y, s) => {
+    out.push(`<path class="dim" d="M${x1} ${Y(y)}H${x2}M${x1} ${Y(y) - 8}v16M${x2} ${Y(y) - 8}v16"/>`);
+    T((x1 + x2) / 2, y + 8, s, 'dimtxt');
+  };
+  const dimV = (x, y1, y2, s) => {
+    out.push(`<path class="dim" d="M${x} ${Y(y1)}V${Y(y2)}M${x - 8} ${Y(y1)}h16M${x - 8} ${Y(y2)}h16"/>`);
+    T(x - 10, (y1 + y2) / 2, s, 'dimtxt', 'middle', -90);
+  };
+  return { R, Pg, T, dimH, dimV, done: () => { el.innerHTML = out.join(''); } };
+}
+
+// Poziția de lucru
+(function () {
+  const v = svgView(document.getElementById('v1'), -360, -40, 920, 1200);
+  const L = P.lungSus / 2, yS = P.taburetH, yM = yS + D.micaH, yT = P.tinta;
+  const tw = P.taburetW / 2;
+  // taburetul, descriptiv: picioarele din față, șezutul, treapta de jos din spate
+  for (const pc of taburetProiectat('fata')) v.Pg(pc.pts, 'stool');
+  v.T(0, 120, 'taburet', 'note');
+  v.R(-P.micaW / 2, yS, P.micaW / 2, yM, 'ply');
+  v.T(0, yS + D.micaH / 2 - 8, 'cutia mică', 'note');
+  v.R(-L, yT - t, L, yT, 'black');
+  v.R(-L, yM, L, yM + t, 'black');
+  v.R(-L, yM + t, -L + t, yT - t, 'black');
+  // gaura de mână de pe peretele din spate
+  v.R(-P.gauraL / 2, yM + D.mareV / 2 - P.gauraH / 2, P.gauraL / 2, yM + D.mareV / 2 + P.gauraH / 2, 'hidden', P.gauraH / 2);
+  const xi = -L + t, ySa = yT - t - P.jocSertar - t;
+  v.R(xi, ySa - t, xi + D.sinaL, ySa, 'hidden');
+  const xs = xi + P.scos;   // capătul plăcii ajunge la L + scos
+  v.R(xs, ySa, xs + D.sertarL, ySa + t, 'drawer');
+  v.R(xs + D.sertarL - D.manerL, ySa - t, xs + D.sertarL, ySa, 'drawer');
+  v.T(0, yM + 70, 'cutia mare', 'note');
+  v.dimV(-260, 0, yS, cm(P.taburetH));
+  v.dimV(-260, yS, yM, cm(D.micaH));
+  v.dimV(-260, yM, yT, cm(D.mareV));
+  v.dimV(-320, 0, yT, cm(P.tinta) + ' cm');
+  v.dimH(-L, L, yT + 40, cm(P.lungSus) + ' cm');
+  v.dimH(-P.micaW / 2, P.micaW / 2, yS - 60, cm(P.micaW));
+  v.dimH(L, xs + D.sertarL, yT + 40, 'tras ' + cm(P.scos));
+  v.T(xs + D.sertarL + 10, ySa - 70, 'mouse la ' + cm(D.mouse) + ' cm', 'note', 'end');
+  v.done();
+})();
+
+// Strânsă, ca măsuță
+(function () {
+  const v = svgView(document.getElementById('v2'), -140, -60, 560, 620);
+  const W = D.mareV, H = P.lungSus;
+  v.R(0, 0, t, H, 'black');
+  v.R(W - t, 0, W, H, 'black');
+  v.R(t, H - t, W - t, H, 'black');
+  const xb = t + P.jocSertar;
+  v.R(xb, 0, xb + t, D.sertarL, 'drawer');
+  v.R(xb + t, 0, xb + 2 * t, D.manerL, 'drawer');
+  v.R(xb + t, D.manerL, xb + 2 * t, D.manerL + D.sinaL, 'hidden');
+  const xm = t + D.banda + D.jocV;
+  v.R(xm, 0, xm + D.micaH, P.micaW, 'ply');
+  v.T(xm + D.micaH / 2, P.micaW / 2, 'cutia mică', 'note', 'middle', -90);
+  v.dimH(0, W, -35, cm(W) + ' cm');
+  v.dimV(-40, 0, H, cm(H) + ' cm');
+  v.dimV(-95, 0, P.micaW, cm(P.micaW));
+  v.done();
+})();
+
+// Vedere de sus: cât trebuie tras sertarul
+(function () {
+  const v = svgView(document.getElementById('v3'), -300, -120, 1020, 660);
+  const L = P.lungSus / 2, d = D.mareD;
+  v.R(-L, 0, L, d, 'black');
+  v.R(-P.tastW / 2, (d - P.tastD) / 2, P.tastW / 2, (d + P.tastD) / 2, 'ply');
+  v.T(0, d / 2 - 8, 'tastatura', 'note');
+  const y0 = t + (D.iD - D.sertarW) / 2, y1 = y0 + D.sertarW, xe = L + P.scos;
+  v.R(L, y0, xe, y1, 'drawer');
+  const mx = L + P.margine;
+  v.R(mx, d / 2 - P.mouseL / 2, mx + P.mouseW, d / 2 + P.mouseL / 2, 'ply');
+  v.T(mx + P.mouseW / 2, d / 2 + P.mouseL / 2 + 15, 'mouse', 'note');
+  v.dimH(L, L + D.scosMin, -40, 'minim ' + cm(D.scosMin));
+  v.dimH(L, xe, -95, 'cu loc de mișcare ' + cm(P.scos));
+  v.dimH(-L, L, d + 40, cm(P.lungSus) + ' cm');
+  v.dimV(-L - 40, 0, d, cm(d) + ' cm');
+  v.done();
+})();
+document.getElementById('v3cap').textContent =
+  `Vedere de sus. Ca mouse-ul doar să încapă, sertarul se trage ${cm(D.scosMin)} cm: lățimea mouse-ului, ${cm(P.mouseW)} cm, plus ${cm(P.margine)} cm liberi de fiecare parte. ` +
+  `Ca mouse-ul să se și miște, ${cm(P.scos)} cm. Atunci în cutie rămân ${cm(D.sertarL - P.scos)} cm din placă, iar capacul o ține să nu se încline. ` +
+  `Am desenat un mouse obișnuit, de ${cm(P.mouseW)} × ${cm(P.mouseL)} cm.`;
+
+document.getElementById('checks').innerHTML = verificari()
+  .map(([s, ok]) => `<li class="${ok ? 'ok' : 'bad'}">${ok ? '✓' : '✗'} <span style="color:var(--ink)">${s}</span></li>`).join('');
+
+const numePlaca = k => k === 'S' ? `scândura de ${LATIMI.S} mm` : `placa de ${LATIMI[k]} mm`;
+document.querySelector('#cut tbody').innerHTML = PIESE.map(p => p.grup
+  ? `<tr class="grp"><td colspan="7">${p.grup}</td></tr>`
+  : `<tr><td>${p.nr}</td><td>${p.nume}</td><td>${p.buc}</td><td class="n">${p.L} mm</td><td class="n">${p.l} mm</td><td>${numePlaca(p.placa)}</td><td>${p.unde}</td></tr>`).join('');
+document.getElementById('sheet').textContent =
+  `Cutiile și placa sertarului sunt din ${MATERIALE[P.material].nume}, de ${t} mm. Mânerul și șinele sunt din ${SCANDURA.nume} de ${t} × ${SCANDURA.lat} mm; pagina Hornbach nu spune din ce lemn e. ` +
+  `„Pe fibră" e lungimea tăiată de-a curmezișul plăcii; fibra merge în lungul ei. Lățimea plăcii devine lățimea piesei, deci nicio piesă nu se spintecă pe lungime.`;
+
+const plan = planDebitare();
+const lei = x => x.toLocaleString('ro-RO', { maximumFractionDigits: 2 });
+document.getElementById('plan-intro').textContent =
+  `Pentru ${MATERIALE[P.material].nume}, cea mai ieftină combinație din ce are Hornbach costă ${lei(plan.pret)} lei. Am socotit ${P.taietura} mm pierduți la fiecare tăietură. ` +
+  `Plăcile de ${P.latA} mm sunt mai late decât cei ${P.taiereAcasa} mm pe care îi taie fierăstrăul de acasă, deci le taie Hornbach. Restul îl tăiați acasă.`;
+document.querySelector('#plan tbody').innerHTML = ['A', 'B', 'C', 'S'].flatMap(k => plan[k].placi.map(pl =>
+  `<tr><td>${k === 'S' ? SCANDURA.nume + ' ' : ''}${t} × ${pl.lat} × ${pl.L} mm${pl.cal ? ', ' + pl.cal : ''}</td><td class="n">${lei(pl.pret)} lei</td><td>${undeSeTaie(k)}</td><td>${pl.bucati.map(b => `${b.L} mm (${b.ce})`).join('<br>')}</td><td class="n">${pl.rest} mm</td></tr>`)).join('');
+const alt = Object.keys(MATERIALE).filter(m => m !== P.material)
+  .map(m => `în ${MATERIALE[m].nume}, aceleași piese costă ${lei(planDebitare(m).pret)} lei`).join('; ');
+document.getElementById('plan-alt').textContent = `Prin comparație, ${alt}. Prețurile sunt cele de pe hornbach.ro din 26.10.2026.`;
+const laHornbach = PIESE.filter(p => p.nume && undeSeTaie(p.placa) === 'la Hornbach').map(p => `${p.L} × ${p.l} mm`);
+document.getElementById('plan-limita').innerHTML =
+  `<strong>De întrebat la magazin.</strong> Pagina Hornbach spune că nu pot debita plăci mai mici de ${P.limitaDebitare} mm pe orizontală și 500 mm pe verticală. ` +
+  `Piesele pe care le taie ei au ${laHornbach.join(' și ')}, deci trec de ${P.limitaDebitare} mm, dar niciuna nu are 500 mm. Nu e limpede dacă cei 500 mm privesc piesa care iese sau placa pusă în mașină; întrebați înainte de comandă.`;
+
+document.getElementById('choices').innerHTML = [
+  `<strong>Înălțimea de lucru e ${cm(P.tinta)} cm, ca tastele să ajungă cam la cot, care e la 105 cm.</strong> Cutia mică are înălțimea plăcii de pin de ${P.latC} mm, deci fața și spatele ei se taie acasă, fără spintecare.`,
+  `<strong>Cutia mică are lățimea șezutului, ${cm(P.sezutW)} cm, și adâncimea plăcii de ${P.latC} mm plus doi pereți, ${cm(D.micaD)} cm, cu puțin sub cei ${cm(P.sezutD)} cm ai șezutului.</strong> Toate piesele ei ies din plăci de ${P.latC} mm și se taie acasă.`,
+  `<strong>Lățimile cutiei mari urmează lățimile plăcilor, ${P.latA} și ${P.latB} mm.</strong> Așa, toate piesele se taie doar de-a curmezișul, iar marginea din fabrică rămâne marginea piesei. De aici vin cotele cutiei mici, ${P.micaW} × ${D.micaD} × ${D.micaH} mm, și ale cutiei mari, ${P.lungSus} × ${D.mareD} × ${D.mareV} mm.`,
+  `<strong>Sertarul e din placa de ${P.latB} mm, iar mânerul și șinele din scândură de ${SCANDURA.lat} mm.</strong> Șinele de ${SCANDURA.lat} mm lățime ajung sub marginile plăcii, care stă pe fiecare pe ${D.reazem} mm. Mânerul e lipit sub capătul plăcii, de-a curmezișul, și se oprește în capătul șinelor când împingeți sertarul. Fără ele, sertarul și șinele ar fi trebuit spintecate pe lungime, peste ce taie fierăstrăul de acasă.`,
+  `<strong>Jocul iese ${Math.min(D.jocL, D.jocD, D.jocV)} mm pe fiecare parte,</strong> peste minimul de ${P.jocMin} mm cerut. Lemnul masiv se umflă și se strânge de-a curmezișul fibrei, iar jocul acoperă și asta.`,
+  `<strong>Îmbinare cap la cap, cu ${numarSuruburi()} de eurosuruburi de ${P.surub.lung} mm;</strong> pozițiile lor sunt pe planșa 4 din PDF. Unde șurubul intră în capătul fibrei, îmbinarea se și lipește. De aici vine ordinea din coloana „Unde stă". La cutia mare, capacul și fundul acoperă celelalte piese, ca suprafața tastaturii să fie dintr-o singură bucată. La cutia mică, fața și spatele acoperă celelalte piese și au înălțimea cutiei, ${D.micaH} mm, cât lățimea plăcii de ${P.latC} mm din care ies.`,
+  `<strong>Găurile de mână sunt alungite, de ${cm(P.gauraL)} × ${cm(P.gauraH)} cm, cu capete rotunde, în mijlocul feței.</strong> Ați cerut găuri, fără formă, mărime și loc, deci acestea le-am ales eu.`,
+  `<strong>Sertarul alunecă lemn pe lemn.</strong> Capacul îl ține să nu se ridice în spate când e tras.`
+].map(s => `<li>${s}</li>`).join('');
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<title>Suport de tastatură — planșe</title>
+<style>
+  @page { size: 420mm 297mm; margin: 0; }
+  html, body { margin: 0; background: #fff; }
+  svg.page { display: block; width: 420mm; height: 297mm; break-after: page; }
+  svg.page:last-of-type { break-after: auto; }
+  svg text { font-family: "Arial Narrow", Arial, sans-serif; fill: #000; }
+  .cut { fill: url(#hatch); stroke: #000; stroke-width: 0.45; }
+  .vis { fill: none; stroke: #000; stroke-width: 0.25; }
+  .hid { fill: none; stroke: #000; stroke-width: 0.15; stroke-dasharray: 1.2 0.8; }
+  .axis { fill: none; stroke: #000; stroke-width: 0.15; stroke-dasharray: 4 0.8 0.6 0.8; }
+  .dim { fill: none; stroke: #000; stroke-width: 0.13; }
+  .tick { fill: none; stroke: #000; stroke-width: 0.35; }
+  .floor { fill: none; stroke: #000; stroke-width: 0.6; }
+  .frame { fill: none; stroke: #000; stroke-width: 0.5; }
+  .thin { fill: none; stroke: #000; stroke-width: 0.18; }
+</style>
+</head>
+<body>
+<svg class="defs" width="0" height="0" style="position:absolute;width:0;height:0"><defs>
+  <pattern id="hatch" patternUnits="userSpaceOnUse" width="0.9" height="0.9" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="0.9" stroke="#000" stroke-width="0.1"/></pattern>
+  <pattern id="waste" patternUnits="userSpaceOnUse" width="1.6" height="1.6" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="1.6" stroke="#888" stroke-width="0.12"/></pattern>
+</defs></svg>
+<svg id="p1" class="page" viewBox="0 0 420 297" xmlns="http://www.w3.org/2000/svg"></svg>
+<svg id="p2" class="page" viewBox="0 0 420 297" xmlns="http://www.w3.org/2000/svg"></svg>
+<svg id="p3" class="page" viewBox="0 0 420 297" xmlns="http://www.w3.org/2000/svg"></svg>
+<svg id="p4" class="page" viewBox="0 0 420 297" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="geometrie.js"></script>
+<script src="plansa-desen.js"></script>
+<script src="plansa-pagini.js"></script>
+</body>
+</html>
