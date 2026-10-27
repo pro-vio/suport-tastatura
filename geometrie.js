@@ -71,18 +71,21 @@ D.iesireAd = (D.micaD - P.sezutD) / 2;
 D.iesireMare = (D.mareD - P.sezutD) / 2;
 
 // Taburetul BEKVÄM, desenat descriptiv după desenele IKEA. Cunoscute: înălțimea 500, treapta la 250, baza 430 × 390,
-// șezutul 360 × 240. Secțiunile, înclinările și ramele sunt luate din proporțiile desenelor, fără cote.
+// șezutul 360 × 240. Înclinările picioarelor și locul treptei sunt măsurate pe desenul cotat IKEA
+// (masuratori/calibreaza.py → taburet-masurat.js, obiectul MASURAT); secțiunile și ramele sunt luate din proporții.
 // Axe: x pe lățime (latura de 360 e spre utilizator), y în adâncime (utilizatorul la y negativ, treapta în spate), z în sus.
 const TABURET = {
   picior: 32, sezutGros: 20, treaptaGros: 20, rama: 50, ramaGros: 20,
   sezutPeste: 10,          // cât iese șezutul peste picioare
-  inclinFata: 100,         // cât se depărtează spre podea picioarele dinspre utilizator
-  treaptaAd: 120,          // adâncimea treptei de jos
-  treaptaPeste: 25,        // cât iese treapta peste picioarele din spate
+  // picioarele dinspre utilizator (spatele taburetului), aproape verticale: cât se depărtează spre podea
+  inclinFata: Math.round(MASURAT.sezutSpate + 10 - MASURAT.bazaSpate),
+  treaptaAd: Math.round(MASURAT.treaptaFata - MASURAT.treaptaSpate),   // adâncimea treptei de jos
+  treaptaLat: Math.round(MASURAT.treaptaLat),                           // lățimea treptei
   gauraL: 110, gauraH: 25  // gaura de mână din șezut, în lungul laturii de 360
 };
 TABURET.zt = P.taburetH - TABURET.sezutGros;                                      // sub șezut
 TABURET.evazare = (P.taburetW - P.sezutW) / 2 + TABURET.sezutPeste;               // pe lățime, pe fiecare parte
+// picioarele de pe partea treptei (fața taburetului) sunt cele oblice: duc treapta și închid baza de 390
 TABURET.inclinSpate = P.taburetD - P.sezutD + 2 * TABURET.sezutPeste - TABURET.inclinFata;
 // colțul exterior al unui picior la înălțimea z; sx, sy = ±1
 function piciorLa(sx, sy, z) {
@@ -91,6 +94,9 @@ function piciorLa(sx, sy, z) {
 }
 TABURET.fata = piciorLa(1, -1, 0)[1];                                             // picioarele din față, la podea
 TABURET.picioareSpate = piciorLa(1, 1, 0)[1];                                     // picioarele din spate, la podea
+// cât iese treapta peste picioarele de pe partea ei, la înălțimea ei, măsurat în același cadru ca MASURAT
+TABURET.treaptaPeste = Math.round(MASURAT.treaptaFata - (MASURAT.sezutTreapta - TABURET.sezutPeste
+  + (MASURAT.bazaTreapta - MASURAT.sezutTreapta + TABURET.sezutPeste) * (1 - P.treaptaH / TABURET.zt)));
 TABURET.spate = piciorLa(1, 1, P.treaptaH)[1] + TABURET.treaptaPeste;             // marginea treptei
 
 // Piesele taburetului, fiecare ca opt colțuri: patru sus, patru jos.
@@ -123,8 +129,7 @@ function taburetPiese() {
   const zr1 = P.treaptaH - T.treaptaGros, zr0 = zr1 - T.rama;
   rame(zr0, zr1, true);
   // treapta de jos, în spate, și rama de sub ea
-  const [xs, ys] = piciorLa(1, 1, P.treaptaH);
-  out.push(cub(-xs - 5, xs + 5, T.spate - T.treaptaAd, T.spate, zr1, P.treaptaH));
+  out.push(cub(-T.treaptaLat / 2, T.treaptaLat / 2, T.spate - T.treaptaAd, T.spate, zr1, P.treaptaH));
   const [xr, yr] = piciorLa(1, 1, (zr0 + zr1) / 2);
   out.push(cub(-xr + p, xr - p, yr - 6 - g, yr - 6, zr0, zr1));
   return out;

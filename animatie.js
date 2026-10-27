@@ -104,6 +104,7 @@
   function deseneaza() {
     o = [];
     deseneazaIzo([], { fix, linie: 0.25 }, scena(tt));
+    axeIzo(16, 226, 16, 4.2, 0.6);
     svg.innerHTML = o.join('');
     o = [];
     if (directie > 0) {

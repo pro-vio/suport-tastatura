@@ -112,6 +112,21 @@ function deseneazaIzo(cuburi, cadru, corpuri = []) {
   return { k, ox, oy };
 }
 
+// Reperul celor trei axe, ca în desenul tehnic: săgeți din același punct, pe direcțiile din axonometrie.
+// (px, py) e originea pe foaie, lung e lungimea săgeților pe foaie; culoarea și grosimea se pot schimba pentru animație.
+function axeIzo(px, py, lung, marime = 2.1, gros = 0.25) {
+  const dir = { x: [1, 0, 0], y: [0, 1, 0], z: [0, 0, 1] };
+  const et = { x: 'x · lățime', y: 'y · adâncime', z: 'z · înălțime' };
+  for (const a of ['x', 'y', 'z']) {
+    const [x, y, z] = dir[a], du = ISO.u(x, y), dw = ISO.w(x, y, z), n = Math.hypot(du, dw);
+    const ex = px + du / n * lung, ey = py - dw / n * lung;
+    o.push(`<line x1="${px}" y1="${py}" x2="${ex}" y2="${ey}" stroke="#000" stroke-width="${gros}"/>`);
+    const ang = Math.atan2(ey - py, ex - px), h = lung * 0.14;
+    o.push(`<polygon points="${ex},${ey} ${ex - h * Math.cos(ang - 0.4)},${ey - h * Math.sin(ang - 0.4)} ${ex - h * Math.cos(ang + 0.4)},${ey - h * Math.sin(ang + 0.4)}" fill="#000"/>`);
+    txt(ex + (a === 'z' ? 1.5 : du / n * 2), ey + (a === 'z' ? 0 : 2.5), et[a], marime, a === 'y' ? 'start' : a === 'x' ? 'start' : 'start');
+  }
+}
+
 // Piesele poziției de lucru, pe grupe; originea în centrul taburetului, pe podea.
 function scenaLucru() {
   const L = P.lungSus / 2, d = D.mareD / 2, g = {};
@@ -211,6 +226,7 @@ function modelStrans() {
 
 (function () {
   deseneazaIzo(modelLucru(), { x: 20, y: 22, w: 170, h: 200 }, modelTaburet());
+  axeIzo(30, 222, 12);
   titlu(20, 236, '1', 'POZIȚIA DE LUCRU', `axonometrie izometrică · fără scară · suprafața de lucru la ${P.tinta} mm`);
   vedereLaterala(232, 222);
   titlu(200, 236, '3', 'VEDERE LATERALĂ, DIN DREAPTA', '1:10 · taburetul desenat descriptiv');

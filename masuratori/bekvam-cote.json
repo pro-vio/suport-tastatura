@@ -1,0 +1,30 @@
+{
+  "sursa": "Desenul cotat IKEA al taburetului BEKVÄM, 900 × 900 px: https://www.ikea.com/ro/ro/images/products/bekvaem-taburet-2-trepte-fag__1439317_pe985274_s5.jpg",
+  "proiectie": "paralelă (axonometrie); verticalele din lume rămân verticale pe desen",
+  "axe": "x pe lățime (430 la podea, 360 la șezut), y în adâncime (390 la podea, 240 la șezut), z în sus; y crește spre partea treptei",
+  "nota": "Punctele sunt citite cu ochiul pe desenul mărit de 3 ori, pe o grilă de 10 px. Eroarea de citire e de 1–2 px, adică 1–2 mm.",
+  "podea": [
+    { "ce": "talpa piciorului din stânga, colțul exterior", "px": [90, 737.3], "xyz": [-215, -195, 0] },
+    { "ce": "talpa piciorului din față, colțul exterior", "px": [435, 804.3], "xyz": [-215, 195, 0] },
+    { "ce": "talpa piciorului din dreapta, colțul exterior", "px": [818.3, 730.7], "xyz": [215, 195, 0] }
+  ],
+  "sezut": {
+    "z": 500,
+    "colturi": [
+      { "ce": "stânga", "px": [151.7, 111.7], "x": -180, "partea": "spate" },
+      { "ce": "față", "px": [360.7, 140.7], "x": -180, "partea": "treapta" },
+      { "ce": "dreapta", "px": [683.3, 100.0], "x": 180, "partea": "treapta" },
+      { "ce": "fund", "px": [471.7, 75.0], "x": 180, "partea": "spate" }
+    ]
+  },
+  "treapta": {
+    "z": 250,
+    "muchia_din_fata": [
+      { "ce": "colțul din stânga", "px": [433.3, 480.0] },
+      { "ce": "colțul din dreapta", "px": [795.0, 420.7] }
+    ],
+    "muchia_din_spate": [
+      { "ce": "colțul din stânga, unde treapta intră sub ramă", "px": [351.7, 467.3] }
+    ]
+  }
+}
