@@ -73,7 +73,7 @@
 
   .anim { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 20px; align-items: start; }
   @media (max-width: 760px) { .anim { grid-template-columns: minmax(0, 1fr); } }
-  #anim { display: block; width: 100%; height: auto; background: var(--paper); box-shadow: 0 1px 2px var(--shadow), 0 8px 28px var(--shadow); }
+  #anim, #cam { display: block; width: 100%; height: auto; background: var(--paper); box-shadow: 0 1px 2px var(--shadow), 0 8px 28px var(--shadow); }
   .anim-panou { display: grid; gap: 14px; min-width: 0; }
   .anim-pas { font: 500 14px/1 var(--f-display); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
   .anim-text { font-size: 18px; line-height: 1.5; min-height: 4.5em; }
@@ -81,7 +81,7 @@
   .anim-butoane button { font: 500 16px/1 var(--f-display); letter-spacing: 0.05em; padding: 10px 14px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); border-radius: 3px; cursor: pointer; }
   .anim-butoane button:hover { border-color: var(--accent); }
   .anim-butoane button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  #anim-monteaza, #anim-demonteaza { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+  #anim-monteaza, #anim-demonteaza, #cam-monteaza, #cam-demonteaza { background: var(--accent); border-color: var(--accent); color: var(--paper); }
   .anim-bifa { display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: 15px; }
 
   .intrebare { border-left: 3px solid var(--accent); padding: 4px 0 4px 16px; display: grid; gap: 6px; max-width: 72ch; }
@@ -125,6 +125,25 @@
   </section>
 
   <section class="plansa">
+    <div class="plansa-cap"><h2>În birou</h2>
+      <p>Demontat, taburetul stă în fața ferestrei, iar cutiile stau ca măsuță lângă fotoliu. Montat, totul se aduce în fața monitorului, iar monitorul se desface pe braț spre cameră. Pereții sunt din releveu; mobila e din cotele măsurate și din poza camerei.</p></div>
+    <div class="anim">
+      <svg id="cam" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Animația suportului de tastatură în birou"></svg>
+      <div class="anim-panou">
+        <p class="anim-pas" id="cam-pas"></p>
+        <p class="anim-text" id="cam-text" aria-live="polite"></p>
+        <div class="anim-butoane">
+          <button type="button" id="cam-monteaza">Montează</button>
+          <button type="button" id="cam-demonteaza">Demontează</button>
+          <button type="button" id="cam-inapoi" aria-label="Pasul anterior">◀ Pas</button>
+          <button type="button" id="cam-inainte" aria-label="Pasul următor">Pas ▶</button>
+          <button type="button" id="cam-opreste">Oprește</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="plansa">
     <div class="plansa-cap"><span class="nr">1 / 4</span><h2>Cum arată</h2>
       <p>La lucru, cutia mare stă culcată pe cea mică, iar sertarul pentru mouse iese spre dreapta. Strânse, cutia mare acoperă cutia mică și devine măsuță.</p></div>
     <div class="foaie"><svg id="p1" class="page" viewBox="0 0 420 297" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Axonometria suportului de tastatură"></svg></div>
@@ -160,6 +179,8 @@
 <script src="plansa-desen.js"></script>
 <script src="plansa-pagini.js"></script>
 <script src="animatie.js"></script>
+<script src="camera-model.js"></script>
+<script src="animatie-camera.js"></script>
 <script>
 (function () {
   const cm = mm => (mm / 10).toLocaleString('ro-RO', { maximumFractionDigits: 1 });

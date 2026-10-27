@@ -1,1 +1,7 @@
 masuratori/suprapunere.png
+# pozele camerei sunt private: rămân doar pe calculator
+camera/*.jpg
+camera/*.png
+# releveul locuinței e privat
+releveu*.pdf
+camera/

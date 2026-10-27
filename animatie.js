@@ -1,10 +1,8 @@
 // Animația de montare și demontare: de la cutiile strânse, ca măsuță lângă taburet, la suportul gata de lucru, și înapoi.
 // Folosește modelul din geometrie.js și desenul izometric din plansa-pagini.js.
-(function () {
-  const svg = document.getElementById('anim');
-  if (!svg) return;
-  const text = document.getElementById('anim-text'), pasEl = document.getElementById('anim-pas');
 
+// Modelul animației, fără desen: îl folosește și animația din cameră (animatie-camera.js).
+function suportAnimat() {
   // Corpurile fiecărei grupe, în poziția de lucru
   const sc = scenaLucru(), st = scenaPiesaT();
   const corpuri = cs => cs.map(c => (c.fete ? c : cubCorp(c)));
@@ -76,27 +74,42 @@
     };
     return { ...c, op, fete: c.fete.map(f => f.map(tr)) };
   }
-
-  function scena(tt) {
-    const transp = document.getElementById('anim-transp').checked;
+  // corpurile fiecărei grupe la momentul tt; transp = cutiile transparente
+  function grupeLa(tt, transp) {
     // capacul cutiei mari rămâne aproape plin: prin el s-ar vedea sertarul și ar părea că stă deasupra
     const op = { cutiaMica: transp ? 0.4 : 1, cutiaMare: transp ? 0.35 : 1, capac: transp ? 0.92 : 1 };
-    const out = [...taburet];
+    const out = {};
     for (const nume of Object.keys(grupe)) {
       const s = stare(nume, tt);
-      if (s.ascuns) continue;
-      for (const c of grupe[nume]) out.push(aplica(c, nume, s, (c.rol && op[c.rol]) ?? op[nume] ?? 1));
+      out[nume] = s.ascuns ? [] : grupe[nume].map(c => aplica(c, nume, s, (c.rol && op[c.rol]) ?? op[nume] ?? 1));
     }
     return out;
   }
+  // toate pozițiile prin care trec grupele, ca desenul să-și aleagă scara o singură dată
+  function toatePozitiile() {
+    const toate = [];
+    for (const nume of Object.keys(grupe)) for (const s of STARI[nume]) {
+      for (const d of s.via ? [s.d, s.via] : [s.d]) for (const c of grupe[nume]) toate.push(aplica(c, nume, { ...s, d }, 1));
+    }
+    return toate;
+  }
+  return { taburet, PASI, N, xMasuta, grupeLa, toatePozitiile };
+}
+
+(function () {
+  const svg = document.getElementById('anim');
+  if (!svg) return;
+  const text = document.getElementById('anim-text'), pasEl = document.getElementById('anim-pas');
+  const { taburet, PASI, N, grupeLa, toatePozitiile } = suportAnimat();
+
+  function scena(tt) {
+    const g = grupeLa(tt, document.getElementById('anim-transp').checked);
+    return [...taburet, ...Object.values(g).flat()];
+  }
 
   // Scara și originea, alese o singură dată, pe toate stările și punctele de trecere, ca desenul să nu sară
-  const toate = [...taburet];
-  for (const nume of Object.keys(grupe)) for (const s of STARI[nume]) {
-    for (const d of s.via ? [s.d, s.via] : [s.d]) for (const c of grupe[nume]) toate.push(aplica(c, nume, { ...s, d }, 1));
-  }
   o = [];
-  const fix = deseneazaIzo([], { x: 6, y: 6, w: 288, h: 228 }, toate);
+  const fix = deseneazaIzo([], { x: 6, y: 6, w: 288, h: 228 }, [...taburet, ...toatePozitiile()]);
   o = [];
 
   let tt = N, tinta = N, directie = 1, ultim = null, cadru = null;
