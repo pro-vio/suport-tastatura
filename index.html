@@ -162,9 +162,9 @@
   </section>
 
   <section class="plansa">
-    <div class="plansa-cap"><span class="nr">4 / 4</span><h2>Eurosuruburile</h2>
-      <p id="suruburi-cap"></p></div>
-    <div class="foaie"><svg id="p4" class="page" viewBox="0 0 420 297" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pozițiile eurosuruburilor pe fiecare piesă"></svg></div>
+    <div class="plansa-cap"><span class="nr">4 / 4</span><h2>Diblurile</h2>
+      <p id="dibluri-cap"></p></div>
+    <div class="foaie"><svg id="p4" class="page" viewBox="0 0 420 297" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pozițiile diblurilor pe fiecare piesă"></svg></div>
   </section>
 
   <div class="intrebare">
@@ -199,7 +199,7 @@
     ['Cutia mică', `${P.micaW} × ${D.micaD} × ${D.micaH}`, 'mm, natur'],
     ['Material', `${t} mm`, MATERIALE[P.material].nume],
     ['Plăci', `${lei(plan.pret)} lei`, `${placi} bucăți, prețuri Hornbach din 26.10.2026`],
-    ['Eurosuruburi', `${numarSuruburi()} buc.`, P.surub.nume]
+    ['Dibluri', `${numarDibluri()} buc.`, `${P.diblu.nume}, lipite cu aracet`]
   ];
   document.getElementById('fise').innerHTML = fise.map(([dt, dd, s]) =>
     `<div class="fisa"><dt>${dt}</dt><dd>${dd}<small>${s}</small></dd></div>`).join('');
@@ -207,9 +207,9 @@
   document.getElementById('debitare-cap').textContent =
     `Toate piesele se taie de-a curmezișul plăcii, deci nimic nu se spintecă. ` +
     `Plăcile de ${P.latA} mm le taie Hornbach, fiindcă trec de cei ${P.taiereAcasa} mm ai fierăstrăului de acasă; restul se taie acasă.`;
-  document.getElementById('suruburi-cap').textContent =
-    `Fiecare piesă cu găurile ei cotate. Gaura din cant se dă prin cea de pe față, cu piesele strânse. ` +
-    `Unde șurubul intră în capătul fibrei, îmbinarea se și lipește.`;
+  document.getElementById('dibluri-cap').textContent =
+    `Fiecare piesă cu găurile ei cotate. Găurile de pe față sunt oarbe, pe partea dinăuntru, deci nu se văd; ` +
+    `cele din cant se potrivesc cu ele cu dispozitivul pentru dibluri. Totul se lipește cu aracet.`;
   document.getElementById('intrebare').textContent =
     `Pagina lor spune că nu debitează sub ${P.limitaDebitare} mm pe orizontală și 500 mm pe verticală. ` +
     `Piesele pe care le taie ei au ${laHornbach.map(p => `${p.L} × ${p.l} mm`).join(', ')}, deci niciuna nu ajunge la 500 mm. ` +

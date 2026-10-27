@@ -259,7 +259,7 @@ const gx = P.gauraL, gy = P.gauraH;
   [
     `Cote în mm. Material: ${MATERIALE[P.material].nume}, ${t} mm.`,
     'Cutia mare vopsită negru; cutia mică în culoarea lemnului.',
-    'Îmbinări cap la cap, cu eurosuruburi (planșa 4). La cutia mare, capacul',
+    'Îmbinări cap la cap, cu dibluri lipite (planșa 4). La cutia mare, capacul',
     '+și fundul acoperă celelalte piese; la cea mică, fața și spatele.',
     `Joc între cutii, strânse: ${Math.min(D.jocL, D.jocD, D.jocV)} mm pe fiecare parte (minim ${P.jocMin}).`,
     `Găuri de mână ${gx} × ${gy}, capete rotunde, centrate pe față.`,

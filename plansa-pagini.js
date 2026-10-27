@@ -1,4 +1,4 @@
-// Planșele 1, 3 și 4: axonometria, planul de debitare, eurosuruburile.
+// Planșele 1, 3 și 4: axonometria, planul de debitare, diblurile.
 // Folosește ajutoarele din plansa.html (o, txt, vedere, titlu, cartus, pune) și cotele din geometrie.js.
 
 // ================= Planșa 1: axonometrie =================
@@ -300,7 +300,7 @@ function modelStrans() {
   pune('p3');
 })();
 
-// ================= Planșa 4: eurosuruburi =================
+// ================= Planșa 4: dibluri =================
 function gauriCant(nr) {
   const piesa = PIESE.find(p => p.nr === nr), g = [];
   for (const im of IMBINARI.filter(i => i.cant === nr)) {
@@ -328,8 +328,7 @@ function gauriCant(nr) {
     }
     const fata = gauriFata(p.nr), cant = gauriCant(p.nr);
     for (const g of fata) {
-      o.push(`<circle cx="${v.X(g.u)}" cy="${v.Y(g.v)}" r="${P.surub.dFata / 2 * k}" fill="#fff" stroke="#000" stroke-width="0.2"/>`);
-      o.push(`<circle cx="${v.X(g.u)}" cy="${v.Y(g.v)}" r="${P.surub.tesire / 2 * k}" fill="none" stroke="#000" stroke-width="0.1"/>`);
+      o.push(`<circle cx="${v.X(g.u)}" cy="${v.Y(g.v)}" r="${P.diblu.d / 2 * k}" fill="#fff" stroke="#000" stroke-width="0.2"/>`);
     }
     for (const g of cant) o.push(`<circle cx="${v.X(g.u)}" cy="${v.Y(g.v)}" r="0.75" fill="#000"/>`);
     // lanțuri de cote: pozițiile pe lungime deasupra, pe lățime la stânga
@@ -349,21 +348,20 @@ function gauriCant(nr) {
     titlu(a.x - 6, a.y + 8, String(p.nr), `${p.nume.toUpperCase()} · ${per} BUC.`, `fibra pe ${p.L} · pe piesă: ${fata.length} pe față, ${cant.length} în cant`);
   }
 
-  // detaliul îmbinării, 1:1
+  // detaliul îmbinării, 1:1: piesa de deasupra, cu gaura oarbă pe fața dinăuntru, și piesa de dedesubt, cu gaura în cant
   (function () {
-    const v = vedere(380, 92, 1), s = P.surub, adanc = s.lung - t + 3;
-    v.rect(-20, 0, 20, t, 'cut');                // piesa prin care trece șurubul
-    v.rect(-t / 2, -45, t / 2, 0, 'cut');        // piesa în al cărei cant intră
-    o.push(`<rect x="${v.X(-s.dFata / 2)}" y="${v.Y(t)}" width="${s.dFata}" height="${t}" fill="#fff" stroke="#000" stroke-width="0.2"/>`);
-    o.push(`<rect x="${v.X(-s.dCant / 2)}" y="${v.Y(0)}" width="${s.dCant}" height="${adanc}" fill="#fff" stroke="#000" stroke-width="0.2"/>`);
-    o.push(`<polygon points="${v.X(-s.tesire / 2)},${v.Y(t)} ${v.X(s.tesire / 2)},${v.Y(t)} ${v.X(s.dFata / 2)},${v.Y(t - 1.5)} ${v.X(-s.dFata / 2)},${v.Y(t - 1.5)}" fill="#fff" stroke="#000" stroke-width="0.2"/>`);
-    v.line(0, t + 3, 0, -adanc - 3, 'axis');
-    v.dimV(0, t, 20, -5); v.dimV(t - s.lung, 0, t / 2, -5, s.lung - t);
-    v.dimV(-adanc, 0, -t / 2, 5, adanc);
-    v.dimH(-s.dFata / 2, s.dFata / 2, t, 4, `Ø${s.dFata}`);
-    v.dimH(-s.dCant / 2, s.dCant / 2, -adanc, -4, `Ø${s.dCant}`);
+    const v = vedere(380, 92, 1), s = P.diblu, f = D.diblFata, c = D.diblCant;
+    v.rect(-20, 0, 20, t, 'cut');                // piesa pe a cărei față se lipește cantul
+    v.rect(-t / 2, -45, t / 2, 0, 'cut');        // piesa în al cărei cant intră diblul
+    o.push(`<rect x="${v.X(-s.d / 2)}" y="${v.Y(f)}" width="${s.d}" height="${f + c}" fill="#fff" stroke="#000" stroke-width="0.2"/>`);
+    // diblul, în găuri, cu loc de aracet la capătul din cant
+    o.push(`<rect x="${v.X(-s.d / 2 + 0.6)}" y="${v.Y(f)}" width="${s.d - 1.2}" height="${s.lung}" fill="#e8d2a0" stroke="#000" stroke-width="0.2"/>`);
+    v.line(0, t + 3, 0, -c - 3, 'axis');
+    v.dimV(0, t, 20, -5); v.dimV(0, f, -s.d / 2 - 6, 5, f);
+    v.dimV(-c, 0, -t / 2, 5, c);
+    v.dimH(-s.d / 2, s.d / 2, -c, -4, `Ø${s.d}`);
 
-    titlu(350, 146, 'D', 'DETALIU — EUROSURUB', `${s.nume} · 1:1`);
+    titlu(350, 146, 'D', 'DETALIU — DIBLU', `${s.nume} · 1:1`);
   })();
 
   // piesa în T: din față și din lateral la 1:5, plus axonometria ei
@@ -410,17 +408,17 @@ function gauriCant(nr) {
   // legenda și tabelul îmbinărilor
   const x = 14; let y = 238;
   txt(x, y, 'LEGENDĂ ȘI ÎMBINĂRI', 3, 'start', 'font-weight="bold"'); y += 5;
-  o.push(`<circle cx="${x + 1.5}" cy="${y - 0.8}" r="0.7" fill="#fff" stroke="#000" stroke-width="0.2"/><circle cx="${x + 1.5}" cy="${y - 0.8}" r="1" fill="none" stroke="#000" stroke-width="0.1"/>`);
-  txt(x + 4, y, `gaură Ø${P.surub.dFata} prin piesă, cu teșire Ø${P.surub.tesire}, la ${h2} mm de margine (în mijlocul grosimii piesei de dedesubt)`, 2.1); y += 3.6;
+  o.push(`<circle cx="${x + 1.5}" cy="${y - 0.8}" r="0.8" fill="#fff" stroke="#000" stroke-width="0.2"/>`);
+  txt(x + 4, y, `gaură oarbă Ø${P.diblu.d} pe fața dinăuntru, adâncă de ${D.diblFata} mm, la ${h2} mm de margine (în mijlocul grosimii piesei de dedesubt)`, 2.1); y += 3.6;
   o.push(`<circle cx="${x + 1.5}" cy="${y - 0.8}" r="0.75" fill="#000"/>`);
-  txt(x + 4, y, `gaură Ø${P.surub.dCant} în cant, adâncă de ${P.surub.lung - t + 3} mm; se dă prin gaura de deasupra, cu piesele strânse în menghine`, 2.1); y += 5;
+  txt(x + 4, y, `gaură Ø${P.diblu.d} în cant, adâncă de ${D.diblCant} mm; se potrivește cu cea de pe față cu dispozitivul pentru dibluri`, 2.1); y += 5;
   for (const im of IMBINARI) {
     const n = pozitii(im.la - im.de).length * im.linii.length * PIESE.find(p => p.nr === im.fata).buc;
     txt(x, y, `${im.fata} → ${im.cant}`, 2.1, 'start', 'font-weight="bold"');
-    txt(x + 12, y, `${im.ce}: ${n} șuruburi${im.fibra === 'capăt' ? ' — intră în capătul fibrei, unde prind mai slab; aici lipiți îmbinarea' : ''}`, 2.1);
+    txt(x + 12, y, `${im.ce}: ${n} dibluri${im.fibra === 'capăt' ? ' — intră în capătul fibrei; aici diblul duce îmbinarea' : ''}`, 2.1);
     y += 3.4;
   }
-  txt(x, y + 1.5, `Total: ${numarSuruburi()} de ${P.surub.nume}. Pe capacul cutiei mari capetele rămân la vedere, sub tastatură; se pot acoperi cu capace pentru eurosurub.`, 2.1, 'start', 'font-weight="bold"');
-  cartus(4, 'poziția eurosuruburilor', '1:5 · 1:1');
+  txt(x, y + 1.5, `Total: ${numarDibluri()} de ${P.diblu.nume}. Se lipesc cu aracet, în găuri și pe toată îmbinarea; cutia stă în cleme, la echer, până se usucă.`, 2.1, 'start', 'font-weight="bold"');
+  cartus(4, 'poziția diblurilor', '1:5 · 1:1');
   pune('p4');
 })();

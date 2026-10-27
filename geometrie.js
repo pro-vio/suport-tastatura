@@ -261,14 +261,17 @@ function verificari() {
   ];
 }
 
-// Eurosuruburi (confirmat). Fiecare îmbinare: piesa prin care trece șurubul („fata"), linia găurilor pe ea,
-// și piesa în al cărei cant intră („cant"), cu muchia și intervalul de pe ea.
+// Dibluri de fag, lipite cu aracet. Fiecare îmbinare: piesa pe a cărei față se lipește cantul celeilalte („fata"),
+// cu linia găurilor oarbe pe fața dinăuntru, și piesa în al cărei cant intră diblul („cant"), cu muchia și intervalul.
+// Gaura din față e adâncă de două treimi din grosime; restul diblului intră în cant, cu 2 mm loc pentru aracet.
 // Pe piesă: u merge în lungul fibrei (L), v pe lățime (l), ambele de la 0.
-P.surub = { nume: 'eurosurub (confirmat) 7 × 50', dFata: 7, dCant: 5, lung: 50, tesire: 10, capat: 50, pas: 150 };
+P.diblu = { nume: 'dibluri de fag 8 × 40', d: 8, lung: 40, inFata: 12, aer: 2, capat: 50, pas: 150 };
+D.diblFata = P.diblu.inFata;                                        // adâncimea găurii din față
+D.diblCant = P.diblu.lung - P.diblu.inFata + P.diblu.aer;           // adâncimea găurii din cant
 
 // Găurile pe o latură de lungime len: la cel puțin `capat` de margini, la cel mult `pas` între ele.
 function pozitii(len) {
-  const { capat, pas } = P.surub;
+  const { capat, pas } = P.diblu;
   const n = Math.max(2, Math.ceil((len - 2 * capat) / pas) + 1);
   return Array.from({ length: n }, (_, i) => Math.round(capat + i * (len - 2 * capat) / (n - 1)));
 }
@@ -299,8 +302,8 @@ function gauriFata(nr) {
   }
   return g;
 }
-// Câte eurosuruburi intră în total
-function numarSuruburi() {
+// Câte dibluri intră în total
+function numarDibluri() {
   const buc = nr => PIESE.find(p => p.nr === nr).buc;
   return IMBINARI.reduce((s, im) => s + pozitii(im.la - im.de).length * im.linii.length * buc(im.fata), 0);
 }
